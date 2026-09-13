@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ToNaCall | Reuniões que viram decisões</title>
+<style>
+  :root { --ink:#eef4f5; --muted:#829397; --line:rgba(164,190,190,.16); --panel:rgba(16,27,29,.78); --panel-strong:#152326; --cyan:#72e1d1; --orange:#ffb86b; --danger:#ff807c; --shadow:0 24px 80px rgba(0,0,0,.28); }
+  * { box-sizing:border-box; }
+  body { margin:0; min-width:320px; color:var(--ink); background:radial-gradient(circle at 12% 10%,rgba(62,134,128,.18),transparent 30%),radial-gradient(circle at 88% 70%,rgba(139,85,39,.13),transparent 28%),#091214; font-family:"Trebuchet MS","Segoe UI",sans-serif; }
+  body::before { position:fixed; inset:0; z-index:-1; opacity:.16; background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:48px 48px; content:""; mask-image:linear-gradient(to bottom,black,transparent 80%); }
+  .shell { width:min(1180px,calc(100% - 40px)); margin:0 auto; padding:30px 0 64px; }
+  .topbar { display:flex; align-items:center; gap:20px; margin-bottom:54px; }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .brand-mark { position:relative; display:grid; width:36px; height:36px; place-items:center; border:1px solid rgba(114,225,209,.65); border-radius:11px; color:var(--cyan); background:linear-gradient(145deg,rgba(114,225,209,.17),rgba(114,225,209,.025)); box-shadow:0 0 24px rgba(114,225,209,.16),inset 0 0 14px rgba(114,225,209,.08); }
+  .brand-mark::before { width:17px; height:17px; border:1px solid currentColor; border-radius:50%; box-shadow:0 0 10px rgba(114,225,209,.8),inset 0 0 7px rgba(114,225,209,.45); content:""; animation:brandOrbit 5s linear infinite; }
+  .brand-mark::after { position:absolute; width:5px; height:5px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px 3px var(--cyan); content:""; }
+  .brand-copy { display:flex; flex-direction:column; gap:3px; }
+  .brand-name { color:var(--ink); font-family:Georgia,serif; font-size:25px; font-weight:700; letter-spacing:-.05em; line-height:.9; }
+  .brand-name span { color:var(--cyan); }
+  .brand-tagline { color:#75888a; font-family:monospace; font-size:8px; letter-spacing:.18em; line-height:1; text-transform:uppercase; }
+  .live-pill { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+  .live-dot { width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+  .hero { display:grid; grid-template-columns:280px minmax(340px,1fr); align-items:end; gap:36px; margin-bottom:28px; }
+  .hero-logo { display:flex; align-items:center; gap:15px; min-height:84px; }
+  .hero-logo .brand-mark { width:58px; height:58px; flex:0 0 58px; border-radius:17px; }
+  .hero-logo .brand-mark::before { width:25px; height:25px; }
+  .hero-logo .brand-mark::after { width:7px; height:7px; }
+  .hero-logo .brand-name { font-size:36px; }
+  .hero-logo .brand-tagline { margin-top:6px; font-size:7px; }
+  .eyebrow { margin:0 0 16px; color:var(--cyan); font-size:11px; letter-spacing:.2em; text-transform:uppercase; }
+  h1 { max-width:520px; margin:0; font-family:Georgia,serif; font-size:clamp(34px,4.8vw,58px); font-weight:400; line-height:.98; letter-spacing:-.04em; }
+  .hero-copy { max-width:none; margin:0 0 10px; color:var(--muted); font-size:14px; line-height:1.55; }
+  .capture { display:flex; gap:10px; padding:8px; border:1px solid var(--line); border-radius:14px; background:rgba(16,27,29,.85); box-shadow:var(--shadow); }
+  input { min-width:0; flex:1; padding:15px 14px; border:0; outline:0; color:var(--ink); background:transparent; font:inherit; font-size:14px; }
+  input::placeholder { color:#607276; }
+  button { border:0; border-radius:9px; color:#0b1b1b; background:var(--cyan); padding:0 20px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; transition:transform .2s,filter .2s; }
+  button:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }
+  button:disabled { cursor:wait; opacity:.48; }
+  .workspace { display:grid; grid-template-columns:290px minmax(0,1fr); gap:18px; }
+  .panel { border:1px solid var(--line); border-radius:16px; background:var(--panel); box-shadow:var(--shadow); backdrop-filter:blur(14px); }
+  .panel-heading { display:flex; justify-content:space-between; align-items:center; padding:20px 20px 16px; border-bottom:1px solid var(--line); }
+  .panel-heading h2 { margin:0; font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
+  .panel-heading span { color:var(--muted); font-family:monospace; font-size:11px; }
+  .steps { padding:20px; }
+  .step { position:relative; display:flex; gap:13px; min-height:62px; color:#566a6e; }
+  .step:not(:last-child)::before { position:absolute; top:22px; left:9px; width:1px; height:50px; background:var(--line); content:""; }
+  .step-icon { z-index:1; display:grid; width:19px; height:19px; flex:0 0 19px; place-items:center; border:1px solid #425457; border-radius:50%; background:var(--panel-strong); font-size:9px; }
+  .step-name { margin:1px 0 5px; color:inherit; font-size:12px; }
+  .step-detail { color:#526367; font-size:11px; line-height:1.4; }
+  .step.active { color:var(--cyan); }
+  .step.active .step-icon { border-color:var(--cyan); box-shadow:0 0 12px rgba(114,225,209,.25); }
+  .step.done { color:#c0d1ce; }
+  .step.done .step-icon { border-color:var(--cyan); color:var(--cyan); }
+  .step.error { color:var(--danger); }
+  .meeting-meta { padding:18px 20px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; line-height:1.6; overflow-wrap:anywhere; }
+  .meeting-meta strong { display:block; margin-bottom:5px; color:var(--ink); font-size:12px; }
+  .output { min-width:0; }
+  .output-body { padding:24px; }
+  .status-line { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:22px; }
+  .status-label { display:flex; align-items:center; gap:9px; font-size:14px; }
+  .status-label::before { width:8px; height:8px; border-radius:50%; background:var(--orange); box-shadow:0 0 14px var(--orange); content:""; }
+  .status-label.ready::before { background:var(--muted); box-shadow:none; }
+  .status-label.complete::before { background:var(--cyan); box-shadow:0 0 14px var(--cyan); }
+  .status-label.error::before { background:var(--danger); box-shadow:0 0 14px var(--danger); }
+  .status-code { color:var(--muted); font-family:monospace; font-size:11px; }
+  .transcript { min-height:285px; max-height:470px; overflow:auto; padding:20px; border:1px solid var(--line); border-radius:11px; color:#b8c9c7; background:rgba(5,13,15,.62); font-family:Consolas,monospace; font-size:13px; line-height:1.8; white-space:pre-wrap; }
+  .transcript.empty { display:grid; place-items:center; color:#526367; font-family:inherit; text-align:center; }
+  .transcript.empty::before { display:block; margin-bottom:12px; color:#71878a; font-family:Georgia,serif; font-size:32px; content:"//"; }
+  .audio-card { display:none; align-items:center; gap:18px; margin-top:18px; padding:16px; border:1px solid rgba(114,225,209,.25); border-radius:11px; background:rgba(114,225,209,.06); }
+  .audio-card.visible { display:flex; animation:reveal .45s ease both; }
+  .audio-icon { display:grid; width:40px; height:40px; flex:0 0 40px; place-items:center; border-radius:10px; color:var(--cyan); background:rgba(114,225,209,.12); font-size:18px; }
+  .audio-info { min-width:105px; }
+  .audio-info strong { display:block; margin-bottom:4px; font-size:12px; }
+  .audio-info span { color:var(--muted); font-size:11px; }
+  audio { width:100%; height:34px; }
+  .hint { margin:14px 2px 0; color:#536568; font-size:11px; }
+  .insights-panel { margin-top:18px; overflow:hidden; }
+  .insights-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; }
+  .insights-title { display:flex; align-items:center; gap:10px; }
+  .ai-spark { display:grid; width:30px; height:30px; place-items:center; border:1px solid rgba(255,184,107,.55); border-radius:9px; color:var(--orange); background:rgba(255,184,107,.12); box-shadow:0 0 20px rgba(255,184,107,.12); font-size:17px; }
+  .ai-status { display:flex; align-items:center; gap:6px; padding:6px 9px; border:1px solid rgba(114,225,209,.3); border-radius:999px; color:var(--cyan); background:rgba(114,225,209,.07); font-size:10px; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
+  .ai-status::before { width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 9px var(--cyan); content:""; }
+  .insights-intro { max-width:560px; margin:10px 0 0; color:var(--muted); font-size:12px; line-height:1.55; }
+  .insights-body { display:grid; grid-template-columns:220px minmax(0,1fr) minmax(280px,1.15fr); gap:12px; padding:18px; }
+  .ai-field { min-width:0; padding:15px; border:1px solid var(--line); border-radius:11px; background:rgba(5,13,15,.42); }
+  .ai-field-label { display:block; margin-bottom:12px; color:#a9bcba; font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
+  .agent-select { width:100%; padding:11px 10px; border:1px solid var(--line); border-radius:8px; outline:0; color:var(--ink); background:#142427; font:inherit; font-size:12px; }
+  .prompt-input { width:100%; min-height:98px; resize:vertical; padding:11px; border:1px solid var(--line); border-radius:8px; outline:0; color:var(--ink); background:rgba(16,27,29,.72); font:inherit; font-size:12px; line-height:1.5; }
+  .prompt-input:focus, .agent-select:focus { border-color:rgba(114,225,209,.55); }
+  .result-preview { min-height:132px; padding:13px; border:1px dashed rgba(114,225,209,.28); border-radius:8px; color:#829a97; background:rgba(114,225,209,.035); font-size:12px; line-height:1.55; }
+  .result-preview strong { display:block; margin-bottom:8px; color:var(--cyan); font-size:11px; }
+  .insight-chip-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .insight-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 7px; border:1px solid var(--line); border-radius:6px; color:#b2c4c1; background:rgba(255,255,255,.025); font-size:10px; }
+  .result-list { margin:0; padding-left:17px; }
+  .result-list li + li { margin-top:5px; }
+  .insights-footer { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:0 18px 18px; }
+  .analysis-note { display:flex; align-items:center; gap:7px; color:#607477; font-size:11px; }
+  .analysis-note::before { color:var(--cyan); content:"✦"; }
+  .analyze-button { min-height:38px; padding:0 15px; color:#0d1b1c; background:var(--orange); font-size:12px; }
+  .analyze-button:disabled { cursor:not-allowed; opacity:.42; }
+  @keyframes reveal { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes brandOrbit { from { transform:rotate(0deg) scale(.92); } 50% { transform:rotate(180deg) scale(1.08); } to { transform:rotate(360deg) scale(.92); } }
+  @media (max-width:800px) { .hero { grid-template-columns:1fr; gap:24px; } .workspace { grid-template-columns:1fr; } .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; } .step { display:block; min-height:74px; } .step:not(:last-child)::before { top:9px; left:19px; width:calc(100% + 8px); height:1px; } .step-icon { margin-bottom:9px; } .meeting-meta { display:none; } }
+  @media (max-width:540px) { .shell { width:min(100% - 24px,1180px); padding-top:20px; } .topbar { margin-bottom:42px; } .brand-mark { width:34px; height:34px; } .brand-name { font-size:22px; } .brand-tagline { font-size:7px; } .hero { grid-template-columns:1fr; gap:18px; } .hero-logo { min-height:68px; } .hero-logo .brand-mark { width:48px; height:48px; flex-basis:48px; } .hero-logo .brand-name { font-size:30px; } .hero h1 { font-size:44px; } .capture { flex-direction:column; } input { padding:13px 10px; } button { min-height:46px; } .output-body { padding:16px; } .status-line { align-items:flex-start; flex-direction:column; } .steps { padding:16px 10px; } .step-name { font-size:10px; } .step-detail { display:none; } .audio-card { align-items:flex-start; flex-wrap:wrap; } .audio-card audio { flex-basis:100%; } }
+  @media (max-width:800px) { .insights-body { grid-template-columns:1fr 1fr; } .insights-body .result-field { grid-column:1 / -1; } }
+  @media (max-width:540px) { .insights-heading { align-items:flex-start; flex-direction:column; } .insights-body { grid-template-columns:1fr; } .insights-body .result-field { grid-column:auto; } .insights-footer { align-items:flex-start; flex-direction:column; } .analyze-button { width:100%; } }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-logo"><span class="brand-mark"></span><span class="brand-copy"><span class="brand-name">ToNa<span>Call</span></span><span class="brand-tagline">Sua reunião em foco</span></span></div>
+      <div class="hero-content"><p class="hero-copy">Nunca mais perca uma decisão importante. Registre sua reunião, encontre qualquer momento da conversa e transforme o que foi dito em próximos passos claros.</p><div class="capture"><input id="url" placeholder="https://meet.google.com/..." aria-label="Link da reunião" /><button id="btn" onclick="iniciar()">Iniciar captura</button></div></div>
+    </section>
+    <section class="workspace">
+      <aside class="panel"><div class="panel-heading"><h2>Processamento</h2><span id="meetingId">PARADO</span></div><div class="steps">
+        <div class="step active" data-step="joining"><span class="step-icon">01</span><div><p class="step-name">Entrando na sala</p><span class="step-detail">Conectando ao Meet</span></div></div>
+        <div class="step" data-step="recording"><span class="step-icon">02</span><div><p class="step-name">Capturando áudio</p><span class="step-detail">Aguardando encerramento</span></div></div>
+        <div class="step" data-step="transcribing"><span class="step-icon">03</span><div><p class="step-name">Transcrevendo</p><span class="step-detail">Whisper local / PT</span></div></div>
+        <div class="step" data-step="complete"><span class="step-icon">04</span><div><p class="step-name">Finalizado</p><span class="step-detail">Texto e áudio disponíveis</span></div></div>
+      </div><div class="meeting-meta"><strong>Última sessão</strong><span id="meetingUrl">Nenhuma reunião iniciada</span></div></aside>
+      <section class="panel output"><div class="panel-heading"><h2>Transcrição</h2><span id="wordCount">0 palavras</span></div><div class="output-body">
+        <div class="status-line"><div id="statusLabel" class="status-label ready">Aguardando uma reunião</div><span id="statusCode" class="status-code">SISTEMA.PRONTO</span></div>
+        <div id="transcript" class="transcript empty">A transcrição aparecerá aqui quando a reunião terminar.</div>
+        <div id="audioCard" class="audio-card"><div class="audio-icon">&#9654;</div><div class="audio-info"><strong>Áudio da reunião</strong><span>WAV / 16 kHz / mono</span></div><audio id="audioPlayer" controls preload="metadata"></audio></div>
+        <p class="hint" id="hint">O status é atualizado automaticamente a cada 5 segundos.</p>
+      </div></section>
+    </section>
+
+    <section class="panel insights-panel">
+      <div class="panel-heading insights-heading">
+        <div>
+          <div class="insights-title"><span class="ai-spark">✦</span><h2>Análise inteligente</h2><span class="ai-status">IA ativa</span></div>
+          <p class="insights-intro">Escolha um especialista e peça uma leitura direcionada da conversa para transformar a transcrição em decisões práticas.</p>
+        </div>
+      </div>
+      <div class="insights-body">
+        <div class="ai-field">
+          <label class="ai-field-label" for="agentType">1. Tipo de agente</label>
+          <select id="agentType" class="agent-select">
+            <option>Especialista em vendas</option>
+            <option>Especialista em RH</option>
+            <option>Especialista em psicologia</option>
+          </select>
+        </div>
+        <div class="ai-field">
+          <label class="ai-field-label" for="analysisPrompt">2. Prompt da análise</label>
+          <textarea id="analysisPrompt" class="prompt-input" placeholder="Ex.: identifique oportunidades, riscos e próximos passos...">Analise os principais pontos desta reunião e destaque ações recomendadas.</textarea>
+        </div>
+        <div class="ai-field result-field">
+          <span class="ai-field-label">3. Resultado da IA</span>
+          <div class="result-preview">
+            <strong id="resultTitle">Análise pronta para começar</strong>
+            <div class="insight-chip-row"><span class="insight-chip">✦ Resumo</span><span class="insight-chip">◆ Ações</span><span class="insight-chip">● Sinais</span></div>
+            <ul class="result-list">
+              <li id="resultLineOne">Resumo executivo da conversa</li>
+              <li id="resultLineTwo">Insights específicos do agente escolhido</li>
+              <li id="resultLineThree">Próximas ações e pontos de atenção</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="insights-footer">
+        <span class="analysis-note">A análise considera a transcrição desta reunião.</span>
+        <button class="analyze-button" type="button" onclick="gerarInsights()">Gerar insights</button>
+      </div>
+    </section>
+  </main>
+  <script>
+    let botId = null;
+    let poller = null;
+    const labels = { joining:'Bot entrando na reunião', recording:'Gravando reunião', baixando_gravacao:'Baixando gravação', extraindo_audio:'Preparando áudio', transcrevendo:'Transcrevendo com Whisper', concluido:'Transcrição concluída' };
+    const stepOrder = ['joining','recording','transcribing','complete'];
+    function setStatus(text, code, type) { const label = document.getElementById('statusLabel'); label.textContent = text; label.className = 'status-label ' + (type || ''); document.getElementById('statusCode').textContent = code; }
+    function updateSteps(status) { const normalized = status === 'concluido' ? 'complete' : status === 'transcrevendo' ? 'transcribing' : ['baixando_gravacao','extraindo_audio'].includes(status) ? 'transcribing' : status === 'ended' ? 'recording' : 'joining'; const current = stepOrder.indexOf(normalized); document.querySelectorAll('.step').forEach((element,index) => { element.classList.toggle('active',index === current); element.classList.toggle('done',index < current); element.classList.toggle('error',status.startsWith('erro') && index === current); }); }
+    function showResult(data) { const transcript = document.getElementById('transcript'); if (data.transcript) { transcript.className = 'transcript'; transcript.textContent = data.transcript; document.getElementById('wordCount').textContent = data.transcript.trim().split(/\s+/).length + ' palavras'; } if (data.audio_url) { document.getElementById('audioPlayer').src = data.audio_url; document.getElementById('audioCard').classList.add('visible'); } }
+    function gerarInsights() { const agente = document.getElementById('agentType').value; const dados = { 'Especialista em vendas': ['Oportunidade comercial identificada na conversa', 'Sinais de interesse, objeções e próximos passos de negociação', 'Priorizar o retorno ao cliente e registrar o compromisso combinado'], 'Especialista em RH': ['Pontos de alinhamento e clima da equipe identificados', 'Temas de colaboração, desenvolvimento e acompanhamento', 'Definir responsáveis e uma data para revisar os combinados'], 'Especialista em psicologia': ['Padrões de comunicação observados na conversa', 'Momentos de tensão, escuta e necessidades subjacentes', 'Criar espaço de escuta e retomar os pontos sensíveis com cuidado'] }; const resultado = dados[agente]; document.getElementById('resultTitle').textContent = 'Insights gerados para ' + agente; document.getElementById('resultLineOne').textContent = resultado[0]; document.getElementById('resultLineTwo').textContent = resultado[1]; document.getElementById('resultLineThree').textContent = resultado[2]; document.querySelector('.result-preview').animate([{ opacity: .45, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 420, easing: 'ease-out' }); }
+    async function iniciar() { const urlInput = document.getElementById('url'); const url = urlInput.value.trim(); if (!url) { setStatus('Cole um link do Meet para começar','ENTRADA.OBRIGATORIA','error'); return; } document.getElementById('btn').disabled = true; urlInput.disabled = true; document.getElementById('transcript').className = 'transcript empty'; document.getElementById('transcript').textContent = 'Aguardando o encerramento da reunião...'; document.getElementById('audioCard').classList.remove('visible'); document.getElementById('wordCount').textContent = '0 palavras'; setStatus('Enviando bot para a reunião','BOT.INICIANDO',''); try { const resp = await fetch('/meetings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({meeting_url:url})}); const data = await resp.json(); if (!resp.ok || data.error) throw new Error(data.error || 'Não foi possível iniciar a reunião'); botId = data.bot_id; document.getElementById('meetingId').textContent = botId.slice(0,8).toUpperCase(); document.getElementById('meetingUrl').textContent = url; updateSteps(data.status); setStatus(labels[data.status] || 'Bot conectado','BOT.' + data.status.toUpperCase(),''); poller = setInterval(checarStatus,5000); checarStatus(); } catch (error) { setStatus(error.message,'SISTEMA.ERRO','error'); document.getElementById('btn').disabled = false; urlInput.disabled = false; } }
+    async function checarStatus() { if (!botId) return; try { const resp = await fetch(`/meetings/${botId}`); const data = await resp.json(); if (!resp.ok) throw new Error(data.error || 'Falha ao consultar status'); updateSteps(data.status); showResult(data); const isError = typeof data.status === 'string' && data.status.startsWith('erro'); const finished = data.status === 'concluido'; setStatus(isError ? data.status : labels[data.status] || data.status,isError ? 'SISTEMA.ERRO' : 'BOT.' + data.status.toUpperCase(),finished ? 'complete' : isError ? 'error' : ''); if (finished || isError) { clearInterval(poller); document.getElementById('btn').disabled = false; document.getElementById('url').disabled = false; } } catch (error) { setStatus(error.message,'CONSULTA.ERRO','error'); } }
+  </script>
+</body>
+</html>
